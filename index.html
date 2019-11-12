@@ -17,9 +17,10 @@ var myObstacles = [];
 var myScore;
 
 function startGame() {
-    myGamePiece = new component(30, 30, "red", 10, 120);
-    myGamePiece.gravity = 0.05;
-    myScore = new component("30px", "Consolas", "black", 280, 40, "text");
+    myGamePiece = new component(20, 20, "red", 10, 300);
+    
+    // change score placement 
+    myScore = new component("25px", "Consolas", "orange", 10, 30, "text");
     myGameArea.start();
 }
 
@@ -99,7 +100,8 @@ function updateGameArea() {
     }
     myGameArea.clear();
     myGameArea.frameNo += 1;
-    if (myGameArea.frameNo == 1 || everyinterval(150)) {
+    // change the frequency of objects falling
+    if (myGameArea.frameNo == 1 || everyinterval(70)) {
         x = myGameArea.canvas.width;
         minHeight = 20;
         maxHeight = 200;
@@ -107,7 +109,7 @@ function updateGameArea() {
         minGap = 50;
         maxGap = 200;
         gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
-        myObstacles.push(new component(10, height, "green", x, 0));
+        myObstacles.push(new component(20, height, "red", x, 0));
         myObstacles.push(new component(10, x - height - gap, "green", x, height + gap));
     }
     for (i = 0; i < myObstacles.length; i += 1) {
