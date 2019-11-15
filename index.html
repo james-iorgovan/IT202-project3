@@ -89,8 +89,74 @@ player = {
 
 };
 
+// ENEMY SETUP
+var enemyArray = [],
+	enemyIndex = 0,
+	enemy_width = 35,
+	enemy_height = 43,
+	enemy_timer = 1000,
+	enemy_img = new Image();
+	enemy_img.src = './enemy.png';
+	
+// CREATE ENEMY OBJECT
+function enemy(x, y, dx, dy, enemy_img, enemy_width, enemy_height, rotation){
+	this.x = x;
+	this.y = y;
+	this.dx = dx;
+	this.dy = dy;
+	this.img = enemy_img;
+	this.width = enemy_width;
+	this.height = enemy_height;
+	this.rotation = rotation;
+	enemyIndex++;
+	enemyArray[enemyIndex] = this;
+	this.id = enemyIndex;
+	
+	if(this.rotation < 0.2){
+		this.dx = -this.dx;
+	}else if(this.rotation > 0.7){
+		this.dx = -this.dx;
+	}else{
+		this.dx = 0;
+		this.dy = this.dy;
+	}
+	
+	this.update = function(){
+		this.y += this.dy;
+		this.x += this.dx;
+		
+		if(this.x + this.width >= innerWidth){
+			this.dx = -this.dx;
+		}else if(this.x <= 0){
+			this.dx = Math.abs(this.dx);
+		}
+		
+		if(this.y > innerHeight + this.height){
+			this.delete();
+		}
+		
+		this.draw();
+	}
+	
+	this.delete = function(){
+		delete enemyArray[this.id];
+	}
+	
+	this.draw = function(){
+		c.drawImage(this.img, this.x, this.y, this.width, this.height);
+	}
+}
 
-
+// CREATE ENEMY FUNCTION
+function create_enemy(){
+	var x = Math.random() * (innerWidth - enemy_width);
+	var y = -enemy_height;
+	var dx = 3;
+	var dy = 3;
+	var rotation = Math.random();
+	
+	new enemy(x, y, dx, dy, enemy_img, enemy_width, enemy_height, rotation);
+}
 	
 // Collision formula math
 function collisionFunction(a, b){
