@@ -86,8 +86,8 @@
     function create_enemy() {
       var x = Math.random() * (innerWidth + enemy_width);
       var y = -enemy_height;
-      var dx = 5; // enemy speed
-      var dy = 5;
+      var dx = 2; // enemy speed
+      var dy = 2;
       var rotation = Math.random();
       new enemy(x, y, dx, dy, enemy_img, enemy_width, enemy_height, rotation);
     }
@@ -106,31 +106,31 @@
       score++;
 			
 			// Implement game leveling and title upgrades
-      if(score === 25) {
+      if(score === 50) {
         level = 2;
 				title = "Amateur";
-      } else if(score === 50) {
+      } else if(score === 100) {
         level = 3;
 				title = "Beginner";
-      } else if(score === 75) {
+      } else if(score === 200) {
         level = 4;
 				title = "Novice";
-      } else if(score === 100) {
+      } else if(score === 400) {
         level = 5;
 				title = "Apprentice";
-      } else if(score === 150) {
+      } else if(score === 800) {
         level = 6;
 				title = "Beast";
-      } else if(score === 200) {
+      } else if(score === 1600) {
         level = 7;
 				title = "Legendary";
-      } else if(score === 250) {
+      } else if(score === 2500) {
         level = 8;
 				title = "Unstoppable";
-      } else if(score === 300) {
+      } else if(score === 3500) {
         level = 9;
 				title = "Godlike";
-      } else if(score === 350) {
+      } else if(score === 5000) {
         level = 10;
 				title = "Butterscotch";
 			}
@@ -230,7 +230,7 @@
 					if(collisionFunction(bullet, enemy)){
 						bullet.delete();
 						enemy.delete();
-						score += 5;
+						score += 2;
 					}
 				});
 			});
