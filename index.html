@@ -1,75 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en-us">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Project 3</title>
-
-  <style>
-    html,
-    body {
-      padding: 0;
-      margin: 0;
-    }
-  </style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Space Shooting Game</title>
 </head>
+<body style="margin:10px;">
 
-<body>
-  <canvas id="canvas">
-  </canvas>
+<canvas id="canvas" style="background:#000;"></canvas>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  
-  <script>
-    let player = {
-      x: 850,
-      y: 850,
-    }
+<script type="text/javascript">
 
-    const c = document.getElementById("canvas");
-    const ctx = c.getContext("2d");
+// INITIAL SETUP
+var canvas = document.getElementById('canvas'),
+    c = canvas.getContext('2d');
+var innerWidth = 360,
+	innerHeight = 620;
+	canvas.width = innerWidth;
+	canvas.height = innerHeight;
+	
+// VARIABLES
+var score = 0,
+	lastTime = 0;
+	
+// KEYS EVENT LISTENERS
+var map = {
+	37: false, // Left Arrow Key
+	39: false, // Right Arrow Key
+	38: false, // Top Arrow Key
+	40: false, // Bottom Arrow Key
+	32: false, // Space Key
+}
 
-    // Fit the canvas to the screen
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
+addEventListener('keydown', function(event){
+	if(event.keyCode in map){
+		map[event.keyCode] = true;
+		
+		if(map[37]){
+		   player.x += -10;
+		   
+		}else if(map[39]){
+		   player.x += 10;
+		   
+		}else if(map[38]){
+		   player.y += -10;
+		   
+		}else if(map[40]){
+		   player.y += 10;
+		}
+	
+	}
+});
 
-    // Animation loop
-    let animateCanvas = () => {
+addEventListener('keyup', function(event){
+	if(event.keyCode in map){
+		map[event.keyCode] = false;
+	}
+});
+	
+// PLAYER SETUP
+var player = {},
+    player_width = 90,
+	player_height = 95,
+	player_img = new Image();
+	player_img.src = './player.png';
 
-      // Clear the canvas
-      ctx.clearRect(0, 0, c.width, c.height);
+// CREATE PLAYER
+player = {
+	width : player_width,
+	height: player_height,
+	x : innerWidth/2 - player_width/2,
+	y : innerHeight - (player_height+10),
+	power : 10,
+	draw: function(){
+	   if(this.x <= 0){
+	     this.x = 0;
+	   }else if(this.x >= (innerWidth - this.width)){
+	     this.x = (innerWidth -this.width);
+	   }
+	   
+	   if(this.y <= 0){
+	     this.y = 0;
+	   }else if(this.y >= (innerHeight - this.height)){
+	     this.y = (innerHeight - this.height);
+	   }
+	
+	   c.drawImage(player_img, this.x, this.y, this.width, this.height);
+	}
 
-      // Draw Player
-      ctx.fillStyle = "blue";
-      ctx.fillRect(player.x, player.y, 50, 50);
+};
 
-      // Next animation frame
-      requestAnimationFrame(animateCanvas);
-    }
 
-    // initial call to animate
-    requestAnimationFrame(animateCanvas);
-    
-    // Watch for arrow key press
-    document.addEventListener('keydown', function (key) {
-      if (key.keyCode == 37) { // left 
-        player.x -= 20;
-      } else if (key.keyCode == 38) { // up
-        player.y -= 20;
-      } else if (key.keyCode == 39) { // right
-        player.x += 20;
-      } else if (key.keyCode == 40) { // down
-        player.y += 20;
-      }
 
-      // Stop from moving the page
-      key.preventDefault();
-    });
+	
+// Collision formula math
+function collisionFunction(a, b){
+	return a.x < b.x + b.width &&
+				 a.x + a.width > b.x &&
+				 a.y < b.y + b.height &&
+				 a.y + a.height > b.y;
+}
 
-  </script>
+// Detect when object hits player
+function collisionDetection(){
+	emenyArray.forEach(function(enemy){
+		if(collides(player, enemy)){
+			player.power += -2;
+			enemy.delete();
+		}
+	})
+}
+	
+// ANIMATION LOOP
+function animate(currentTime){
+   var animation = requestAnimationFrame(animate);
+	c.clearRect(0,0, canvas.width, canvas.height);
+	
+	// SCORE
+	c.font = '18px arial';
+	c.fillStyle = '#fff';
+	c.fillText('SCORE: '+score, 10, 22);
+	
+	// PLAYER POWER
+	c.font = '18px arial';
+	c.fillStyle = '#00ff83';
+	c.fillText('POWER: '+player.power, innerWidth-108, 22);
+	
+	// DRAW PLAYER
+	player.draw();
+	
+	// CREATE NEW ENEMY EVERY 1 SECONDS
+	if(currentTime >= lastTime + enemy_timer){
+		lastTime = currentTime;
+		create_enemy();
+	}
+	
+	// UPDATE ENEMY POSITIONS
+	enemyArray.forEach(function(enemy){
+		enemy.update();
+	});
+	
+	collisionDetection();
+	
+	if(player.power <= 0){
+		cancelAnimationFrame(animation);
+	}
+}
+	
+	
+animate();
 
+</script>
 
 </body>
-
 </html>
