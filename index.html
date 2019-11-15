@@ -10,20 +10,18 @@
 
   <canvas id="canvas" style="background:#000;"></canvas>
   <script type="text/javascript">
-		
     var canvas = document.getElementById('canvas'),
       c = canvas.getContext('2d');
     var innerWidth = 500,
-      	innerHeight = 700;
+      innerHeight = 700;
     canvas.width = innerWidth;
     canvas.height = innerHeight;
-		
     var score = 0,
       lastTime = 0;
-		
-		var level = 1,
-				lastTime = 0;
-		
+    var level = 1,
+      lastTime = 0;
+		var title = 'Nooblet',
+      lastTime = 0;
      // Key event listeners
     var map = {
       37: false, // Left arrow key
@@ -44,14 +42,12 @@
         map[event.keyCode] = false;
       }
     });
-     
-		// Player specs
+     // Player specs
     var player = {},
       player_width = 50,
       player_height = 50,
       player_img = new Image();
     player_img.src = './fire.jpg';
-		
      // Create player
     player = {
       width: player_width,
@@ -73,7 +69,6 @@
         c.drawImage(player_img, this.x, this.y, this.width, this.height);
       }
     };
-		
      // Falling object specs
     var enemyArray = [],
       enemyIndex = 0,
@@ -82,9 +77,21 @@
       enemy_timer = 300, // enemy object spawn timer
       enemy_img = new Image();
     enemy_img.src = './water.png';
+     // Create falling object
+
+
+     // Enemy spawn function and score counter
+
+    function create_enemy() {
+      var x = Math.random() * (innerWidth + enemy_width);
+      var y = -enemy_height;
+      var dx = 3; // enemy speed
+      var dy = 3;
+      var rotation = Math.random();
+      new enemy(x, y, dx, dy, enemy_img, enemy_width, enemy_height, rotation);
+    }
 		
-    // Create falling object
-    function enemy(x, y, dx, dy, enemy_img, enemy_width, enemy_height, rotation) {
+		    function enemy(x, y, dx, dy, enemy_img, enemy_width, enemy_height, rotation) {
       this.x = x;
       this.y = y;
       this.dx = dx;
@@ -93,43 +100,42 @@
       this.width = enemy_width;
       this.height = enemy_height;
       this.rotation = rotation;
-			
       enemyIndex++;
       score++;
 			
-				if(score === 10){
-				level = 2;
-			}	else if(score === 20){
-				level = 3;
-			}else if(score === 30){
-				level = 4;
-							}
-			else if(score === 40){
-				level = 5;
-							}
-			else if(score === 50){
-				level = 6;
-							}
-			else if(score === 60){
-				level = 7;
-							}
-			else if(score === 70){
-				level = 8;
-							}
-			else if(score === 80){
-				level = 9;
-							}
-			else if(score === 90){
-				level = 10;
-							}
+			// Implement game leveling and title upgrades
+      if(score === 25) {
+        level = 2;
+				title = "Amateur";
+      } else if(score === 50) {
+        level = 3;
+				title = "Beginner";
+      } else if(score === 75) {
+        level = 4;
+				title = "Novice";
+      } else if(score === 100) {
+        level = 5;
+				title = "Apprentice";
+      } else if(score === 150) {
+        level = 6;
+				title = "Beast";
+      } else if(score === 200) {
+        level = 7;
+				title = "Legendary";
+      } else if(score === 250) {
+        level = 8;
+				title = "Unstoppable";
+      } else if(score === 300) {
+        level = 9;
+				title = "Godlike";
+      } else if(score === 350) {
+        level = 10;
+				title = "Butterscotch";
+      }
 			
-
-			      
       enemyArray[enemyIndex] = this;
       this.id = enemyIndex;
-
-			
-			// Release next falling object
+      // Release next falling object
       if(this.rotation < 0) {
         this.dx = -this.dx;
       } else if(this.rotation > 2) {
@@ -158,26 +164,14 @@
         c.drawImage(this.img, this.x, this.y, this.width, this.height);
       }
     }
+		
+     // Collision formula math
 
-
-			
-     
-		// Enemy spawn function and score counter
-    function create_enemy() {
-      var x = Math.random() * (innerWidth + enemy_width);
-      var y = -enemy_height;
-      var dx = 3; // enemy speed
-      var dy = 3;
-      var rotation = Math.random();
-      new enemy(x, y, dx, dy, enemy_img, enemy_width, enemy_height, rotation);
-    }
-    
-		// Collision formula math
     function collisionFunction(a, b) {
       return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
     }
-		
-		// Detect when object hits player
+     // Detect when object hits player
+
     function collisionDetection() {
       enemyArray.forEach(function(enemy) {
         if(collisionFunction(player, enemy)) {
@@ -186,32 +180,31 @@
         }
       })
     }
+     // Animate loop
 
-		// Animate loop
     function animate(currentTime) {
       var animation = requestAnimationFrame(animate);
       c.clearRect(0, 0, canvas.width, canvas.height);
-      
-			// Score
+      // Score
       c.font = '18px arial';
-      c.fillStyle = '#ffffff';
+      c.fillStyle = '#faff00';
       c.fillText('SCORE: ' + score, 10, 22);
-			
+      // Level
+      c.font = '18px arial';
+      c.fillStyle = '#00f2ff';
+      c.fillText('LEVEL: ' + level, 115, 22);
 			// Lives
       c.font = '18px arial';
-      c.fillStyle = '#ffffff';
-      c.fillText('LEVEL: ' + level,  200, 22);
-      
-			// Lives
+      c.fillStyle = '#08ff00';
+      c.fillText('HEALTH: ' + player.lives, 210, 22);
+			// title
       c.font = '18px arial';
-      c.fillStyle = '#ffffff';
-      c.fillText('HEALTH: ' + player.lives, innerWidth -108, 22);
-			
-      
-			// Player
+      c.fillStyle = '#ff0000';
+      c.fillText('TITLE: ' + title, 320, 22);
+
+      // Player
       player.draw();
-     
-			// Create enemy loop
+      // Create enemy loop
       if(currentTime >= lastTime + enemy_timer) {
         lastTime = currentTime;
         create_enemy();
@@ -228,8 +221,8 @@
         document.location.reload();
       }
     }
+     // Functions for button movements
 
-		// Functions for button movements
     function moveleft() {
       player.x -= 20;
     }
@@ -237,13 +230,12 @@
     function moveright() {
       player.x += 20;
     }
-		
     animate();
   </script>
-	
+
   <button onclick="moveleft()">LEFT</button>
   <button onclick="moveright()">RIGHT</button>
-	
+
 </body>
 
 </html>
