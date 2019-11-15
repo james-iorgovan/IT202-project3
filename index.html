@@ -58,7 +58,7 @@
       height: player_height,
       x: innerWidth / 2 - player_width / 2,
       y: innerHeight - (player_height + 10),
-      lives: 1,
+      lives: 2, // player health
       draw: function() {
         if(this.x <= 0) {
           this.x = 0;
@@ -93,6 +93,7 @@
       this.height = enemy_height;
       this.rotation = rotation;
       enemyIndex++;
+			score++;
       enemyArray[enemyIndex] = this;
       this.id = enemyIndex;
       
@@ -105,6 +106,7 @@
         this.dx = 0;
         this.dy = this.dy;
       }
+			
       this.update = function() {
         this.y += this.dy;
         this.x += this.dx;
@@ -126,7 +128,7 @@
       }
     }
      
-		// Enemy spawn function
+		// Enemy spawn function and score counter
     function create_enemy() {
       var x = Math.random() * (innerWidth + enemy_width);
       var y = -enemy_height;
@@ -179,7 +181,9 @@
       enemyArray.forEach(function(enemy) {
         enemy.update();
       });
+			
       collisionDetection();
+			
       // If player reaches 0 lives
       if(player.lives <= 0) {
         cancelAnimationFrame(animation);
