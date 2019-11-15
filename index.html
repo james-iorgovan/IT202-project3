@@ -21,6 +21,9 @@
     var score = 0,
       lastTime = 0;
 		
+		var level = 1,
+				lastTime = 0;
+		
      // Key event listeners
     var map = {
       37: false, // Left arrow key
@@ -41,14 +44,13 @@
         map[event.keyCode] = false;
       }
     });
-     // Player specs
+     
+		// Player specs
     var player = {},
       player_width = 50,
       player_height = 50,
       player_img = new Image();
     player_img.src = './fire.jpg';
-		
-		var level = 0;
 		
      // Create player
     player = {
@@ -91,11 +93,42 @@
       this.width = enemy_width;
       this.height = enemy_height;
       this.rotation = rotation;
+			
       enemyIndex++;
       score++;
+			
+				if(score === 10){
+				level = 2;
+			}	else if(score === 20){
+				level = 3;
+			}else if(score === 30){
+				level = 4;
+							}
+			else if(score === 40){
+				level = 5;
+							}
+			else if(score === 50){
+				level = 6;
+							}
+			else if(score === 60){
+				level = 7;
+							}
+			else if(score === 70){
+				level = 8;
+							}
+			else if(score === 80){
+				level = 9;
+							}
+			else if(score === 90){
+				level = 10;
+							}
+			
+
+			      
       enemyArray[enemyIndex] = this;
       this.id = enemyIndex;
-      
+
+			
 			// Release next falling object
       if(this.rotation < 0) {
         this.dx = -this.dx;
@@ -125,6 +158,9 @@
         c.drawImage(this.img, this.x, this.y, this.width, this.height);
       }
     }
+
+
+			
      
 		// Enemy spawn function and score counter
     function create_enemy() {
@@ -140,7 +176,7 @@
     function collisionFunction(a, b) {
       return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
     }
-     
+		
 		// Detect when object hits player
     function collisionDetection() {
       enemyArray.forEach(function(enemy) {
@@ -150,18 +186,16 @@
         }
       })
     }
-     			
 
 		// Animate loop
     function animate(currentTime) {
       var animation = requestAnimationFrame(animate);
-      c.clearRect(0, 0,  canvas.width, canvas.height);
+      c.clearRect(0, 0, canvas.width, canvas.height);
       
 			// Score
       c.font = '18px arial';
       c.fillStyle = '#ffffff';
       c.fillText('SCORE: ' + score, 10, 22);
-			var level = 0;
 			
 			// Lives
       c.font = '18px arial';
@@ -203,6 +237,7 @@
     function moveright() {
       player.x += 20;
     }
+		
     animate();
   </script>
 	
