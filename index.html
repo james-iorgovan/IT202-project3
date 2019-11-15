@@ -7,7 +7,6 @@
 </head>
 
 <body style="margin:10px;">
-
   <canvas id="canvas" style="background:#000;"></canvas>
   <script type="text/javascript">
     var canvas = document.getElementById('canvas'),
@@ -134,15 +133,15 @@
       } else if(score === 350) {
         level = 10;
 				title = "Butterscotch";
-      }
+			}
 			
       enemyArray[enemyIndex] = this;
       this.id = enemyIndex;
 					
 		 // Release next falling object
-      if(this.rotation < 0) {
+      if(this.rotation < 0.2) { // make some enemy objects move diagonally 
         this.dx = -this.dx;
-      } else if(this.rotation > 2) {
+      } else if(this.rotation > 0.7) {
         this.dx = -this.dx;
       } else {
         this.dx = 0;
@@ -169,22 +168,83 @@
       }
     }
 		
+		// Bullet array
+		var bulletsArray = [],
+				bulletIndex = 0,
+				bullet_width = 5,
+				bullet_height = 20,
+				speed = 10,
+				bullet_last_time = 0,
+				bullet_timer = 300;
+		
+		
+		// Create bullets
+		function bullet(x, y, width, height, speed){
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+			this.speed = speed;
+			
+			bulletIndex++;
+			bulletsArray[bulletIndex] = this;
+			this.id = bulletIndex;
+			
+				this.update = function(){
+				this.y += -this.speed;
+				if(this.y < -this.height){
+					delete this.delete();
+				}			
+					this.draw();
+			}		
+				this.delete = function(){
+				delete bulletsArray[this.id];	
+				}
+			
+			this.draw = function(){
+				c.beginPath();
+				c.rect(this.x, this.y, this.width, this.height);
+				c.fillStyle = '#efab00';
+				c.fill();
+				c.stroke();
+		}
+	}
+		
+		// Fire bullets
+		function fire(){
+			var x = (player.x + player.width / 2) - bullet_width / 2;
+			var y = player.y;
+			new bullet(x, y, bullet_width, bullet_height, speed);
+		}
+
      
 		// Collision formula math
     function collisionFunction(a, b) {
       return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
     }
      
-		// Detect when object hits player
+		// Detect when object hits player or player shoots object
     function collisionDetection() {
+			bulletsArray.forEach(function(bullet){
+				enemyArray.forEach(function(enemy){
+					if(collisionFunction(bullet, enemy)){
+						bullet.delete();
+						enemy.delete();
+						score += 5;
+					}
+				});
+			});
+		
+			
       enemyArray.forEach(function(enemy) {
         if(collisionFunction(player, enemy)) {
           player.lives += -1;
           enemy.delete();
         }
-      })
+      });
     }
      
+
 		// Animate loop
     function animate(currentTime) {
       var animation = requestAnimationFrame(animate);
@@ -193,22 +253,22 @@
 			// Score
       c.font = '18px arial';
       c.fillStyle = '#faff00';
-      c.fillText('SCORE: ' + score, 10, 22);
+      c.fillText('SCORE: ' + score, 215, 22);
       
 			// Level
       c.font = '18px arial';
       c.fillStyle = '#00f2ff';
-      c.fillText('LEVEL: ' + level, 115, 22);
+      c.fillText('LEVEL: ' + level, 120, 22);
 			
 			// Lives
       c.font = '18px arial';
       c.fillStyle = '#08ff00';
-      c.fillText('HEALTH: ' + player.lives, 210, 22);
+      c.fillText('HEALTH: ' + player.lives, 10, 22);
 			
 			// Title
       c.font = '18px arial';
       c.fillStyle = '#ff0000';
-      c.fillText('TITLE: ' + title, 320, 22);
+      c.fillText('TITLE: ' + title, 335, 22);
 
       // Player
       player.draw();
@@ -223,6 +283,19 @@
       enemyArray.forEach(function(enemy) {
         enemy.update();
       });
+			
+			// Fire bullets
+			if(currentTime >= bullet_last_time + bullet_timer){
+				bullet_last_time = currentTime;
+				fire();
+			}
+						
+		// Update bullet location
+		bulletsArray.forEach(function(bullet){
+			bullet.update();
+		});
+
+			
       collisionDetection();
       
 			// If player reaches 0 lives
@@ -241,6 +314,25 @@
     function moveright() {
       player.x += 20;
     }
+		
+		function keypress(e) {
+			if (e.keydown == 80) pauseGame();
+		}
+		function pauseGame() {
+			game = clearTimeout(game);
+		}
+		
+		function pauseGame() {
+			if (!gamePaused) {
+				game = clearTimeout(game);
+				gamePaused = true;
+			} else if (gamePaused) {
+				game = setTimeout(gameLoop, 1000 / 30);
+				gamePaused = false;
+		}
+}
+     
+
     animate();
   </script>
 
